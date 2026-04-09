@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦐 学习虾错题自测 - 完整版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header h1 { font-size: 24px; color: #333; text-align: center; margin-bottom: 15px; }
+        .user-selector { display: flex; gap: 10px; }
+        .user-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .user-btn.active { background: #667eea; color: white; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .option:hover { border-color: #667eea; background: #f5f5ff; }
+        .option.selected { border-color: #667eea; background: #667eea; color: white; }
+        .option.correct { border-color: #4CAF50; background: #4CAF50; color: white; }
+        .option.wrong { border-color: #f44336; background: #f44336; color: white; }
+        .question-text { font-size: 18px; line-height: 1.8; color: #333; margin-bottom: 20px; }
+        .analysis {
+            display: none;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .analysis.show { display: block; }
+        .hidden { display: none; }
+        .variant-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .variant-toggle {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .variant-toggle label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #555;
+        }
+        .variant-toggle input { width: 18px; height: 18px; cursor: pointer; }
+        .hint { font-size: 14px; color: #666; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦐 学习虾错题自测</h1>
+            <div class="user-selector">
+                <button class="user-btn active" onclick="switchUser('zuozuo')">👤 左左</button>
+                <button class="user-btn" onclick="switchUser('youyou')">👤 右右</button>
+            </div>
+        </div>
+        
+        <div id="startCard" class="card">
+            <h2 style="margin-bottom: 15px;">📚 准备开始</h2>
+            <p id="userInfo" style="color: #666; margin-bottom: 20px;">当前用户：左左</p>
+            
+            <div class="variant-toggle">
+                <label>
+                    <input type="checkbox" id="variantMode" onchange="toggleVariantMode()">
+                    🔄 启用变式题模式（举一反三）
+                </label>
+                <p class="hint">💡 启用后会生成类似题目，帮助真正掌握知识点</p>
+            </div>
+            
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px;">📊 可用题库</h3>
+                <div id="questionBank"></div>
+            </div>
+            <button class="btn" onclick="startQuiz()">开始自测</button>
+        </div>
+        
+        <div id="quizCard" class="card hidden">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 15px;">
+                第 <span id="currentNum">1</span> / <span id="totalNum">10</span> 题
+                <span id="variantBadge" class="variant-badge" style="display: none;">🔄 变式题</span>
+            </div>
+            <div class="question-text" id="questionText">题目加载中...</div>
+            <div id="optionsContainer"></div>
+            <button class="btn" id="submitBtn" onclick="submitAnswer()" disabled>提交答案</button>
+            <div class="analysis" id="analysisCard">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📖 详细解析</h3>
+                <div id="analysisContent"></div>
+            </div>
+            <button class="btn" id="nextBtn" onclick="nextQuestion()" style="display: none;">下一题</button>
+        </div>
+        
+        <div id="resultCard" class="card hidden" style="text-align: center;">
+            <div style="font-size: 60px; margin: 20px 0;" id="resultEmoji">🎉</div>
+            <h2>测试完成！</h2>
+            <div style="font-size: 48px; font-weight: bold; color: #667eea; margin: 20px 0;" id="finalScore">100 分</div>
+            <button class="btn" onclick="goHome()">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // 原始题库
+        const originalQuestions = {
+            zuozuo: {
+                physics: [
+                    { id: 1, question: "关于单摆的运动，下列说法正确的是（ ）", options: ["A. 回复力是重力和拉力的合力", "B. 同一位置速度相同", "C. 加速度总指向平衡位置", "D. 平衡位置加速度为零"], answer: "D", analysis: "<p><strong>A 错误</strong>：回复力只是重力的切向分力。</p><p><strong>B 错误</strong>：速度是矢量，方向会变化。</p><p><strong>C 错误</strong>：加速度有切向和法向分量。</p><p><strong>D 正确</strong>：平衡位置回复力为零。</p>" },
+                    { id: 2, question: "（多选）单摆（θ<5°）周期为 T，下列说法正确的是（ ）", options: ["A. 质量增加周期变小", "B. 摆角变小周期变小", "C. T = 2π√(l/g)", "D. T=1.2s 时 l≈0.36m"], answer: "CD", analysis: "<p><strong>A 错误</strong>：周期与质量无关。</p><p><strong>B 错误</strong>：小角度下周期与摆角无关。</p><p><strong>C 正确</strong>：单摆周期公式。</p><p><strong>D 正确</strong>：l = gT²/(4π²) ≈ 0.36m。</p>" },
+                    { id: 3, question: "DIS 实验中，t=0.2s 时拉力最大，说明摆球在（ ）", options: ["A. 最高点", "B. 最低点", "C. 中间位置", "D. 无法判断"], answer: "B", analysis: "<p>拉力最大时在最低点，因为 F = mg + mv²/l，速度最大时需要向心力最大。</p>" }
+                ],
+                biology: [
+                    { id: 4, question: "利用四种试剂对 6 个细胞染色，相邻不同色，甲试剂不能染 C，共有多少种方法？", options: ["填空题"], answer: "90", isFill: true, analysis: "<p>A、C、D 两两相邻→必须用 3 种不同颜色</p><p>C 不能用甲→C 有 3 种选择</p><p>总计：18 × 5 = 90 种</p>" }
+                ]
+            },
+            youyou: {
+                math: [
+                    { id: 5, question: "若 A_n³ = 12C_n²，则 n = ?", options: ["A. 6", "B. 7", "C. 8", "D. 9"], answer: "C", analysis: "<p>A_n³ = n(n-1)(n-2)</p><p>12C_n² = 6n(n-1)</p><p>n-2 = 6 → n = 8</p>" },
+                    { id: 6, question: "已知 C_{n+1}⁷ - C_n⁷ = C_n⁸，则 n 等于？", options: ["A. 12", "B. 13", "C. 14", "D. 15"], answer: "C", analysis: "<p>移项：C_{n+1}⁷ = C_n⁷ + C_n⁸</p><p>用递推公式得 C_{n+1}⁷ = C_{n+1}⁸</p><p>由对称性：7 + 8 = n + 1 → n = 14</p>" },
+                    { id: 7, question: "从 5 名男生、3 名女生中选 4 人，至少有 1 名女生的选法有多少种？", options: ["A. 55 种", "B. 60 种", "C. 65 种", "D. 70 种"], answer: "C", analysis: "<p>逆向排除法：</p><p>总选法：C_8⁴ = 70</p><p>全是男生：C_5⁴ = 5</p><p>至少 1 女生：70 - 5 = 65 种</p>" }
+                ]
+            }
+        };
+        
+        // 变式题生成器
+        function generateVariants(original) {
+            const variants = [];
+            
+            // 数字变式
+            if (original.question.includes("12")) {
+                const variant = JSON.parse(JSON.stringify(original));
+                variant.question = original.question.replace("12", "20");
+                variant.answer = original.answer === "C" ? "C" : original.answer;
+                variant.isVariant = true;
+                variants.push(variant);
+            }
+            
+            // 问法变式
+            if (original.question.includes("正确的是")) {
+                const variant = JSON.parse(JSON.stringify(original));
+                variant.question = original.question.replace("正确的是", "错误的是");
+                variant.isVariant = true;
+                variants.push(variant);
+            }
+            
+            return variants;
+        }
+        
+        // 合并题库（原始 + 变式）
+        function getMergedQuestions() {
+            const merged = JSON.parse(JSON.stringify(originalQuestions));
+            
+            if (isVariantMode) {
+                for (let user in merged) {
+                    for (let subject in merged[user]) {
+                        const originals = merged[user][subject];
+                        const variants = [];
+                        originals.forEach(q => {
+                            const v = generateVariants(q);
+                            variants.push(...v);
+                        });
+                        // 原始题 + 变式题混合
+                        merged[user][subject] = [...originals, ...variants];
+                        // 打乱顺序
+                        merged[user][subject].sort(() => Math.random() - 0.5);
+                    }
+                }
+            }
+            
+            return merged;
+        }
+        
+        let questionBank = originalQuestions;
+        let currentUser = 'zuozuo';
+        let currentSubject = 'physics';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswer = null;
+        let isVariantMode = false;
+        
+        function toggleVariantMode() {
+            isVariantMode = document.getElementById('variantMode').checked;
+            questionBank = getMergedQuestions();
+            updateQuestionBank();
+        }
+        
+        function switchUser(user) {
+            currentUser = user;
+            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('userInfo').textContent = '当前用户：' + (user === 'zuozuo' ? '左左' : '右右');
+            const bank = questionBank[currentUser];
+            currentSubject = Object.keys(bank)[0];
+            updateQuestionBank();
+        }
+        
+        function updateQuestionBank() {
+            const bank = questionBank[currentUser];
+            let html = '';
+            for (let subject in bank) {
+                const count = bank[subject].length;
+                const subjectName = subject === 'physics' ? '物理' : (subject === 'math' ? '数学' : '生物');
+                const isChecked = subject === currentSubject ? 'checked' : '';
+                html += '<div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div><strong>' + subjectName + '</strong><span style="color: #666; margin-left: 8px;">' + count + ' 题' + (isVariantMode ? ' (含变式)' : '') + '</span></div>' +
+                    '<label style="cursor: pointer;"><input type="radio" name="subject" value="' + subject + '" ' + isChecked + ' onchange="currentSubject=\'' + subject + '\'"><span style="margin-left: 5px;">选择</span></label></div>';
+            }
+            document.getElementById('questionBank').innerHTML = html;
+        }
+        
+        function startQuiz() {
+            currentQuestions = questionBank[currentUser][currentSubject];
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('startCard').classList.add('hidden');
+            document.getElementById('quizCard').classList.remove('hidden');
+            document.getElementById('totalNum').textContent = currentQuestions.length;
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            document.getElementById('currentNum').textContent = currentQuestionIndex + 1;
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('variantBadge').style.display = q.isVariant ? 'inline-block' : 'none';
+            
+            if (q.isFill) {
+                document.getElementById('optionsContainer').innerHTML = '<input type="text" id="fillInput" class="option" style="width: 100%;" placeholder="请输入答案" oninput="userAnswer = this.value.trim(); document.getElementById(\'submitBtn\').disabled = !userAnswer;">';
+                userAnswer = '';
+            } else {
+                const isMulti = q.answer.length > 1;
+                userAnswer = isMulti ? [] : null;
+                let html = '';
+                q.options.forEach((opt, i) => {
+                    html += '<div class="option" onclick="selectOption(' + i + ')">' + opt + '</div>';
+                });
+                document.getElementById('optionsContainer').innerHTML = html;
+            }
+            
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('analysisCard').classList.remove('show');
+        }
+        
+        function selectOption(index) {
+            if (document.getElementById('analysisCard').classList.contains('show')) return;
+            
+            const q = currentQuestions[currentQuestionIndex];
+            const isMulti = q.answer.length > 1;
+            
+            if (isMulti) {
+                const idx = userAnswer.indexOf(index);
+                if (idx > -1) userAnswer.splice(idx, 1); else userAnswer.push(index);
+                document.querySelectorAll('.option').forEach((opt, i) => {
+                    opt.classList.toggle('selected', userAnswer.includes(i));
+                });
+            } else {
+                userAnswer = index;
+                document.querySelectorAll('.option').forEach((opt, i) => {
+                    opt.classList.remove('selected');
+                    if (i === index) opt.classList.add('selected');
+                });
+            }
+            document.getElementById('submitBtn').disabled = isMulti ? userAnswer.length === 0 : false;
+        }
+        
+        function submitAnswer() {
+            const q = currentQuestions[currentQuestionIndex];
+            let isCorrect = false;
+            
+            if (q.isFill) {
+                isCorrect = userAnswer === q.answer;
+            } else {
+                const isMulti = q.answer.length > 1;
+                if (isMulti) {
+                    const selected = userAnswer.map(i => String.fromCharCode(65 + i)).sort().join('');
+                    const correct = q.answer.split('').sort().join('');
+                    isCorrect = selected === correct;
+                } else {
+                    isCorrect = userAnswer === (q.answer.charCodeAt(0) - 'A'.charCodeAt(0));
+                }
+                
+                document.querySelectorAll('.option').forEach((opt, i) => {
+                    opt.classList.remove('selected');
+                    const letter = String.fromCharCode(65 + i);
+                    if (q.answer.includes(letter)) opt.classList.add('correct');
+                    if (!q.answer.includes(letter) && ((isMulti && userAnswer.includes(i)) || (!isMulti && i === userAnswer))) opt.classList.add('wrong');
+                });
+            }
+            
+            if (isCorrect) score++;
+            
+            document.getElementById('analysisContent').innerHTML = q.analysis;
+            document.getElementById('analysisCard').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+        
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= currentQuestions.length) {
+                showResult();
+            } else {
+                showQuestion();
+            }
+        }
+        
+        function showResult() {
+            document.getElementById('quizCard').classList.add('hidden');
+            document.getElementById('resultCard').classList.remove('hidden');
+            const accuracy = Math.round((score / currentQuestions.length) * 100);
+            document.getElementById('finalScore').textContent = score + '/' + currentQuestions.length + ' (' + accuracy + '%)';
+            document.getElementById('resultEmoji').textContent = accuracy >= 80 ? '🏆' : (accuracy >= 60 ? '👍' : '💪');
+        }
+        
+        function goHome() {
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('startCard').classList.remove('hidden');
+        }
+        
+        updateQuestionBank();
+    </script>
+</body>
+</html>
