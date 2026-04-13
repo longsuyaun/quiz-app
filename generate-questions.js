@@ -7,17 +7,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const OUTPUT_FILE = '/root/.openclaw/workspace/apps/quiz-app/question-bank.json';
+const OUTPUT_FILE = '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/apps/quiz-app/question-bank.json';
 
 const DATA_SOURCES = {
     'zuozuo': [
-        '/root/.openclaw/workspace/data/错题本/左左',
-        '/root/.openclaw/workspace/错题本/物理',
-        '/root/.openclaw/workspace/错题本/物理/机械波',
-        '/root/.openclaw/workspace/students/zuozuo/错题本'
+        '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/data/错题本/左左',
+        '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/students/zuozuo/错题本'
     ],
     'youyou': [
-        '/root/.openclaw/workspace/data/错题本/右右'
+        '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/data/错题本/右右'
+    ],
+    'baoge': [
+        '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/data/错题本/鲍哥'
     ]
 };
 
