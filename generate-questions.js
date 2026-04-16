@@ -83,6 +83,18 @@ function parseMarkdownFile(filePath) {
         }
     }
     
+    // 尝试格式 4: ### 题 X/XXX：或 ### 题 X：（批量录入格式）
+    if (questions.length === 0) {
+        const format4Blocks = content.split(/(?=###\s+题\s+[0-9]+(?:\/[0-9]+)?：)/);
+        for (const block of format4Blocks) {
+            if (!block.trim()) continue;
+            const titleMatch = block.match(/###\s+题\s*([0-9]+)(?:\/[0-9]+)?：/);
+            if (!titleMatch) continue;
+            const q = parseQuestionBlock(block, parseInt(titleMatch[1]));
+            if (q) questions.push(q);
+        }
+    }
+    
     // 尝试格式 3: 单题文件
     if (questions.length === 0) {
         const q = parseSingleQuestionFile(content, filePath);

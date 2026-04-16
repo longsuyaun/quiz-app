@@ -159,6 +159,32 @@
     </div>
 
     <script>
+
+// 从 question-bank.json 动态加载题目
+let questionBank = null;
+
+async function loadQuestionBank() {
+    const response = await fetch('question-bank.json');
+    questionBank = await response.json();
+    initApp();
+}
+
+// 初始化函数
+function initApp() {
+    // 设置默认用户
+    const userButtons = document.querySelectorAll('.user-btn');
+    userButtons.forEach((btn, index) => {
+        if (index === 0) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // 加载题库
+    updateQuestionBank();
+}
+
         // 🦐 自动生成的题库 - 2026-04-11
         // 来源：Markdown 错题文件
         const originalQuestions = {
@@ -388,7 +414,7 @@
         
         // 合并题库（原始 + 变式）
         function getMergedQuestions() {
-            const merged = JSON.parse(JSON.stringify(originalQuestions));
+            const merged = JSON.parse(JSON.stringify(questionBank));
             
             if (isVariantMode) {
                 for (let user in merged) {
@@ -557,7 +583,8 @@
             document.getElementById('startCard').classList.remove('hidden');
         }
         
-        updateQuestionBank();
+        // 页面加载时调用 loadQuestionBank
+        loadQuestionBank();
     </script>
 </body>
 </html>
