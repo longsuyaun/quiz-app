@@ -111,8 +111,8 @@
         <div class="header">
             <h1>🦐 学习虾错题自测</h1>
             <div class="user-selector">
-                <button class="user-btn active" onclick="switchUser('zuozuo')">👤 左左</button>
-                <button class="user-btn" onclick="switchUser('youyou')">👤 右右</button>
+                <button class="user-btn active" onclick="switchUser('左左')">👤 左左</button>
+                <button class="user-btn" onclick="switchUser('右右')">👤 右右</button>
             </div>
         </div>
         
@@ -439,7 +439,7 @@ function initApp() {
         }
         
         let questionBank = originalQuestions;
-        let currentUser = 'zuozuo';
+        let currentUser = '左左';
         let currentSubject = 'physics';
         let currentQuestions = [];
         let currentQuestionIndex = 0;
@@ -457,7 +457,7 @@ function initApp() {
             currentUser = user;
             document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            document.getElementById('userInfo').textContent = '当前用户：' + (user === 'zuozuo' ? '左左' : '右右');
+            document.getElementById('userInfo').textContent = '当前用户：' + (user === '左左' ? '左左' : '右右');
             const bank = questionBank[currentUser];
             currentSubject = Object.keys(bank)[0];
             updateQuestionBank();
