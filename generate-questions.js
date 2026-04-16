@@ -10,11 +10,11 @@ const path = require('path');
 const OUTPUT_FILE = '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/apps/quiz-app/question-bank.json';
 
 const DATA_SOURCES = {
-    'zuozuo': [
+    '左左': [
         '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/data/错题本/左左',
         '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/students/zuozuo/错题本'
     ],
-    'youyou': [
+    '右右': [
         '/Users/bao/.openclaw/workspace/finance-docs/zuozuo-youyou-学习资料完整版/data/错题本/右右'
     ],
     'baoge': [
@@ -271,10 +271,10 @@ function parseSingleQuestionFile(content, filePath) {
 }
 
 function scanMistakeBooks() {
-    const questionBank = { zuozuo: {}, youyou: {} };
+    const questionBank = { '左左': {}, '右右': {} };
     
     for (const [userCode, sourceDirs] of Object.entries(DATA_SOURCES)) {
-        const userName = userCode === 'zuozuo' ? '左左' : '右右';
+        const userName = userCode === '左左' ? '左左' : '右右';
         console.log(`\n📚 扫描 ${userName} 的错题本...`);
         
         for (const sourceDir of sourceDirs) {
@@ -386,15 +386,15 @@ console.log('🦐 学习虾题库生成器启动...\n');
 const rawBank = scanMistakeBooks();
 
 let totalQuestions = 0;
-for (const user of ['zuozuo', 'youyou']) {
+for (const user of ['左左', '右右']) {
     for (const questions of Object.values(rawBank[user] || {})) {
         totalQuestions += questions.length;
     }
 }
 
 console.log(`\n📊 题库统计：共 ${totalQuestions} 题`);
-for (const user of ['zuozuo', 'youyou']) {
-    const userName = user === 'zuozuo' ? '左左' : '右右';
+for (const user of ['左左', '右右']) {
+    const userName = user === '左左' ? '左左' : '右右';
     console.log(`  ${userName}:`);
     for (const [subject, questions] of Object.entries(rawBank[user] || {})) {
         console.log(`    ${subject}: ${questions.length} 题`);
