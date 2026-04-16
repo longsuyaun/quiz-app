@@ -312,45 +312,71 @@ function scanMistakeBooks() {
                     
                     if (!fs.statSync(subjectDir).isDirectory()) continue;
                     
-                    // 如果目录名不是学科名，递归扫描子目录（如 机械波/）
+                    // 如果目录名不是学科名，递归扫描子目录（如 2026-04-10/）
                     if (!subjectCode) {
                         console.log(`    📁 ${subject}/ (子目录):`);
-                        const subQuestions = {};
                         
-                        const scanSubDir = (dir, subSubject) => {
+                        // 递归扫描所有子目录，自动识别学科
+                        const autoScanDir = (dir, parentSubjectCode) => {
                             for (const item of fs.readdirSync(dir)) {
                                 const itemPath = path.join(dir, item);
                                 const itemStat = fs.statSync(itemPath);
                                 if (itemStat.isDirectory()) {
-                                    scanSubDir(itemPath, subSubject);
+                                    const itemSubjectCode = SUBJECT_MAP[item] || DIR_SUBJECT_MAP[item];
+                                    if (itemSubjectCode) {
+                                        // 找到学科目录，扫描其中的文件
+                                        for (const subItem of fs.readdirSync(itemPath)) {
+                                            const subItemPath = path.join(itemPath, subItem);
+                                            const subItemStat = fs.statSync(subItemPath);
+                                            if (subItemStat.isDirectory()) {
+                                                autoScanDir(subItemPath, itemSubjectCode);
+                                            } else if (subItem.endsWith('.md')) {
+                                                const questions = parseMarkdownFile(subItemPath);
+                                                if (questions.length > 0) {
+                                                    console.log(`      - ${subItem}: ${questions.length} 题`);
+                                                    if (!questionBank[userCode][itemSubjectCode]) questionBank[userCode][itemSubjectCode] = [];
+                                                    questionBank[userCode][itemSubjectCode].push(...questions);
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        // 不是学科目录，继续递归扫描
+                                        autoScanDir(itemPath, parentSubjectCode);
+                                    }
                                 } else if (item.endsWith('.md')) {
+                                    // 直接扫描 MD 文件
                                     const questions = parseMarkdownFile(itemPath);
                                     if (questions.length > 0) {
                                         console.log(`      - ${item}: ${questions.length} 题`);
-                                        if (!subQuestions[subSubject]) subQuestions[subSubject] = [];
-                                        subQuestions[subSubject].push(...questions);
+                                        
+                                        // 根据每个题目的 ID 自动识别学科
+                                        for (const q of questions) {
+                                            let targetSubject;
+                                            if (q.id >= 300 && q.id <= 399) {
+                                                targetSubject = 'chemistry';
+                                            } else if (q.id >= 200 && q.id <= 299) {
+                                                targetSubject = 'physics';
+                                            } else if (q.id >= 400 && q.id <= 499) {
+                                                targetSubject = 'biology';
+                                            } else if (q.id >= 100 && q.id <= 199) {
+                                                targetSubject = 'math';
+                                            } else {
+                                                targetSubject = parentSubjectCode || 'unknown';
+                                            }
+                                            
+                                            if (!questionBank[userCode][targetSubject]) questionBank[userCode][targetSubject] = [];
+                                            questionBank[userCode][targetSubject].push(q);
+                                        }
                                     }
                                 }
                             }
                         };
                         
-                        // 尝试从父目录名推断学科
-                        const parentName = path.basename(sourceDir);
-                        const parentSubjectCode = DIR_SUBJECT_MAP[parentName] || SUBJECT_MAP[parentName];
-                        if (parentSubjectCode) {
-                            scanSubDir(subjectDir, parentSubjectCode);
-                            for (const [subSubject, questions] of Object.entries(subQuestions)) {
-                                if (!questionBank[userCode][subSubject]) questionBank[userCode][subSubject] = [];
-                                questionBank[userCode][subSubject].push(...questions);
-                            }
-                            const total = Object.values(subQuestions).reduce((sum, q) => sum + q.length, 0);
-                            if (total > 0) {
-                                console.log(`    ✅ ${parentName}/${subject} 共 ${total} 题`);
-                            }
-                        }
+                        autoScanDir(subjectDir, null);
                         continue;
                     }
                     
+                    // 学科目录，扫描其中的文件
                     console.log(`    📖 ${subject}:`);
                     const subjectQuestions = [];
                     
