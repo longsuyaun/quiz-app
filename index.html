@@ -436,7 +436,6 @@ function initApp() {
             return merged;
         }
         
-        let questionBank = originalQuestions;
         let currentUser = '左左';
         let currentSubject = 'physics';
         let currentQuestions = [];
@@ -451,17 +450,6 @@ function initApp() {
             updateQuestionBank();
         }
         
-        function switchUser(user) {
-            currentUser = user;
-            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('userInfo').textContent = '当前用户：' + (user === '左左' ? '左左' : '右右');
-            const bank = questionBank[currentUser];
-            currentSubject = Object.keys(bank)[0];
-            updateQuestionBank();
-        }
-        
-        function updateQuestionBank() {
             const bank = questionBank[currentUser];
             let html = '';
             for (let subject in bank) {
@@ -588,3 +576,14 @@ function initApp() {
     </script>
 </body>
 </html>
+function switchUser(user) {
+            currentUser = user;
+            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('userInfo').textContent = '当前用户：' + (user === '左左' ? '左左' : '右右');
+            const bank = questionBank[currentUser];
+            currentSubject = Object.keys(bank)[0];
+            updateQuestionBank();
+        }
+
+
