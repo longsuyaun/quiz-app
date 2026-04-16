@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🦐 学习虾错题自测 - 完整版 (v2026.04.16-23:01)</title>🦐 学习虾错题自测 - 完整版 (v2026.04.16-23:00)</title>
+    <title>🦐 学习虾错题自测 - 完整版</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -111,8 +111,8 @@
         <div class="header">
             <h1>🦐 学习虾错题自测</h1>
             <div class="user-selector">
-                <button class="user-btn active" onclick="switchUser('左左')">👤 左左</button>
-                <button class="user-btn" onclick="switchUser('右右')">👤 右右</button>
+                <button class="user-btn active" onclick="switchUser('zuozuo')">👤 左左</button>
+                <button class="user-btn" onclick="switchUser('youyou')">👤 右右</button>
             </div>
         </div>
         
@@ -391,21 +391,6 @@ function initApp() {
 
         
         // 变式题生成器
-        function updateQuestionBank() {
-            const bank = questionBank[currentUser];
-            let html = '';
-            for (let subject in bank) {
-                const count = bank[subject].length;
-                const subjectName = subject === 'physics' ? '物理' : (subject === 'math' ? '数学' : '生物');
-                const isChecked = subject === currentSubject ? 'checked' : '';
-                html += '<div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
-                    '<div><strong>' + subjectName + '</strong><span style="color: #666; margin-left: 8px;">' + count + ' 题' + (isVariantMode ? ' (含变式)' : '') + '</span></div>' +
-                    '<label style="cursor: pointer;"><input type="radio" name="subject" value="' + subject + '" ' + isChecked + ' onchange="currentSubject=\'' + subject + '\'"><span style="margin-left: 5px;">选择</span></label></div>';
-            }
-            document.getElementById('questionBank').innerHTML = html;
-        }
-
-
         function generateVariants(original) {
             const variants = [];
             
@@ -453,7 +438,8 @@ function initApp() {
             return merged;
         }
         
-        let currentUser = '左左';
+        let questionBank = originalQuestions;
+        let currentUser = 'zuozuo';
         let currentSubject = 'physics';
         let currentQuestions = [];
         let currentQuestionIndex = 0;
@@ -467,6 +453,17 @@ function initApp() {
             updateQuestionBank();
         }
         
+        function switchUser(user) {
+            currentUser = user;
+            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('userInfo').textContent = '当前用户：' + (user === 'zuozuo' ? '左左' : '右右');
+            const bank = questionBank[currentUser];
+            currentSubject = Object.keys(bank)[0];
+            updateQuestionBank();
+        }
+        
+        function updateQuestionBank() {
             const bank = questionBank[currentUser];
             let html = '';
             for (let subject in bank) {
@@ -593,14 +590,3 @@ function initApp() {
     </script>
 </body>
 </html>
-function switchUser(user) {
-            currentUser = user;
-            document.querySelectorAll('.user-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('userInfo').textContent = '当前用户：' + (user === '左左' ? '左左' : '右右');
-            const bank = questionBank[currentUser];
-            currentSubject = Object.keys(bank)[0];
-            updateQuestionBank();
-        }
-
-
