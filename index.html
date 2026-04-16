@@ -159,7 +159,7 @@
     </div>
 
     <script>
-        // 原始题库
+        
         const originalQuestions = {
             zuozuo: {
                 physics: [
@@ -170,7 +170,7 @@
                     { id: 332, question: "理论化学模拟得到一种 N₁₃⁺离子，结构如图（中心 N 连接 4 个 N₃基团）。下列说法错误的是？", options: ["A. 所有原子均满足 8 电子结构", "B. N 原子的杂化方式有 2 种", "C. 空间结构为四面体形", "D. 1 个 N₁₃⁺离子中含有 12 个σ键"], answer: "B", analysis: "<p>A 对：每个 N 原子都形成 3 个共价键，满足 8 电子</p><p>B 错：N 原子杂化方式有 3 种——中心 N 为 sp³，N₃中端基 N 为 sp，中间 N 为 sp²</p><p>C 对：中心 N 连 4 个基团，四面体结构</p><p>D 对：中心 N 有 4 个σ键，每个 N₃有 2 个σ键，共 4+4×2=12 个σ键</p>" },
                     { id: 333, question: "铁的配合物 [Fe(Htrz)₃](ClO₄)₂，其中 Htrz 为 1,2,4-三氮唑。下列说法正确的是？①阴离子 ClO₄⁻空间构型 ②Htrz 分子中σ键数 ③与 Fe²⁺形成配位键的原子", options: ["A. 直线形，6 个σ键，N 配位", "B. 正四面体，8 个σ键，N 配位", "C. 正四面体，6 个σ键，C 配位", "D. 三角锥形，8 个σ键，N 配位"], answer: "B", analysis: "<p>①ClO₄⁻：Cl 为 sp³杂化，正四面体构型</p><p>②Htrz（三氮唑）：5 元环有 5 个σ键，3 个 N-H 键，共 8 个σ键</p><p>③N 原子有孤电子对，与 Fe²⁺形成配位键</p>" },
                     
-                    { id: 334, question: "下列说法不正确的是？A. BF₃和 SO₃中 B、S 杂化类型相同，均为平面三角形 B. CH₄、CCl₄都是含极性键的非极性分子 C. C₂²⁻与 O₂²⁺互为等电子体，1mol O₂²⁺含 π 键 2N_A D. AB₂空间结构为 V 形，则 A 为 sp³杂化", options: ["A", "B", "C", "D"], answer: "D", analysis: "<p>A 对：BF₃和 SO₃都是 sp²杂化，平面三角形</p><p>B 对：CH₄和 CCl₄都是正四面体，对称结构，非极性分子</p><p>C 对：C₂²⁻与 O₂²⁺都是 10 电子，与 N₂类似，含 2 个 π 键</p><p>D 错：AB₂为 V 形，A 可能是 sp²（如 SO₂）或 sp³（如 H₂O），不一定是 sp³</p>" },
+                    { id: 334, question: "下列说法不正确的是？A. BF₃和 SO₃中 B、S 杂化类型相同，均为平面三角形 B. CH₄、CCl₄都是含极性键的非极性分子 C. C₂²⁻与 O₂²⁺互为等电子体，1mol O₂²⁺含 π 键 2N_A D. AB₂空间结构为 V 形，则 A 为 sp³杂化", options: ["A", "B", "C", "D"], answer: "D", analysis: "<p>A 对：BF₃和 SO₃都是 sp²杂化，平面三角形</p><p>B 对：CH₄和 CCl₄都是正四面体，对称结构，非极性分子</p><p>C 对：C₂²⁻与 O₂²⁺都是 10 电子，与 N₂类似，含 2 个 π 键</p><p>D 错：AB₂为 V 形，A 可能是 sp²（如 SO₂）或 sp³（如 H₂O），不一定是 sp³</p>" }
                     
                 ],
                 biology: [
@@ -281,11 +281,11 @@
             }
         };
         
-        // 变式题生成器
+        
         function generateVariants(original) {
             const variants = [];
             
-            // 数字变式
+            
             if (original.question.includes("12")) {
                 const variant = JSON.parse(JSON.stringify(original));
                 variant.question = original.question.replace("12", "20");
@@ -294,7 +294,7 @@
                 variants.push(variant);
             }
             
-            // 问法变式
+            
             if (original.question.includes("正确的是")) {
                 const variant = JSON.parse(JSON.stringify(original));
                 variant.question = original.question.replace("正确的是", "错误的是");
@@ -305,7 +305,7 @@
             return variants;
         }
         
-        // 合并题库（原始 + 变式）
+        
         function getMergedQuestions() {
             const merged = JSON.parse(JSON.stringify(originalQuestions));
             
@@ -318,9 +318,9 @@
                             const v = generateVariants(q);
                             variants.push(...v);
                         });
-                        // 原始题 + 变式题混合
+                        
                         merged[user][subject] = [...originals, ...variants];
-                        // 打乱顺序
+                        
                         merged[user][subject].sort(() => Math.random() - 0.5);
                     }
                 }
