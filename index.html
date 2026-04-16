@@ -374,6 +374,14 @@ const originalQuestions = {
 };
 
 
+let currentUser = '左左';
+let currentSubject = 'physics';
+let currentQuestions = [];
+let currentQuestionIndex = 0;
+let score = 0;
+let userAnswer = null;
+let isVariantMode = false;
+
 function initApp() {
     // 设置默认用户
     const userButtons = document.querySelectorAll('.user-btn');
@@ -439,13 +447,6 @@ function initApp() {
         }
         
         let questionBank = originalQuestions;
-        let currentUser = '左左';
-        let currentSubject = 'physics';
-        let currentQuestions = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let userAnswer = null;
-        let isVariantMode = false;
         
         function toggleVariantMode() {
             isVariantMode = document.getElementById('variantMode').checked;
