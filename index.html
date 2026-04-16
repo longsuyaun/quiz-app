@@ -390,7 +390,21 @@ function initApp() {
 }
 
         
-        // 变式题生成器
+        // 变式题生成器function updateQuestionBank() {
+            const bank = questionBank[currentUser];
+            let html = '';
+            for (let subject in bank) {
+                const count = bank[subject].length;
+                const subjectName = subject === 'physics' ? '物理' : (subject === 'math' ? '数学' : '生物');
+                const isChecked = subject === currentSubject ? 'checked' : '';
+                html += '<div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div><strong>' + subjectName + '</strong><span style="color: #666; margin-left: 8px;">' + count + ' 题' + (isVariantMode ? ' (含变式)' : '') + '</span></div>' +
+                    '<label style="cursor: pointer;"><input type="radio" name="subject" value="' + subject + '" ' + isChecked + ' onchange="currentSubject=\'' + subject + '\'"><span style="margin-left: 5px;">选择</span></label></div>';
+            }
+            document.getElementById('questionBank').innerHTML = html;
+        }
+
+
         function generateVariants(original) {
             const variants = [];
             
