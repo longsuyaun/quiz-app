@@ -1,0 +1,25 @@
+# OpenClaw workspace config (not quiz-app content)
+.openclaw/
+AGENTS.md
+SOUL.md
+IDENTITY.md
+USER.md
+TOOLS.md
+HEARTBEAT.md
+README.md
+memory/
+
+# Chinese docs (reference only)
+GitHub 推送指南.md
+同步说明.md
+在线版优化通知.md
+手动触发同步说明.md
+文件监听自动同步说明.md
+自动同步服务说明.md
+部署总结.md
+部署指南.md
+修复总结.md
+
+# Generated files (local only)
+*.bak
+kanban_*.html
